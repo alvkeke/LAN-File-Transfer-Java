@@ -4,12 +4,19 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class FileRecvHandler {
+class FileRecvHandler {
 
     private ServerSocket serverSocket;
+    private boolean inLoop;
+    private FileRecvCallback mCallback;
+
+    FileRecvHandler(FileRecvCallback callback){
+        mCallback = callback;
+    }
 
     boolean init(int port){
 
+        inLoop = true;
         try {
             serverSocket = new ServerSocket(port);
             new Thread(new ListenThread()).start();
@@ -25,16 +32,21 @@ public class FileRecvHandler {
         @Override
         public void run() {
 
-            while (true){
+            while (inLoop){
                 try {   //todo: complete the method
                     Socket socketAccept = serverSocket.accept();
-                    new Thread(new FileRecvThread(socketAccept)).start();
+                    System.out.println("got an client want to send file.");
+                    new Thread(new FileRecvThread(mCallback, socketAccept)).start();
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
+    }
+
+    void exit(){
+        inLoop = false;
     }
 
 }

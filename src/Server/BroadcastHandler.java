@@ -9,6 +9,7 @@ class BroadcastHandler {
     private DatagramSocket mSocket;
     private int mBroadPort;
     private BroadcastCallback mCallback;
+    private boolean inLoop;
 
     BroadcastHandler(String username, BroadcastCallback callback){
         mUsername = username;
@@ -17,6 +18,7 @@ class BroadcastHandler {
 
     boolean startListen(int port){
 
+        inLoop = true;
         mBroadPort = port;
         try {
             mSocket = new DatagramSocket(mBroadPort);
@@ -34,7 +36,7 @@ class BroadcastHandler {
         @Override
         public void run() {
 
-            while (mSocket != null){
+            while (inLoop){
 
                 byte[] buf = new byte[1024];
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
@@ -48,7 +50,7 @@ class BroadcastHandler {
 
                     if (cmd.equals(Cs.LOGIN_STR_CMD)){
                         mCallback.gotClientOffline(username);
-                        mCallback.gotClientOnline(username, packet.getSocketAddress());
+                        mCallback.gotClientOnline(username, packet.getAddress());
                         // 接收到客户端上线时也广播一次登录信息
                         broadcast();
                     } else if (cmd.equals(Cs.LOGOUT_STR_CMD)) {
@@ -60,6 +62,10 @@ class BroadcastHandler {
 
             }
         }
+    }
+
+    void exit(){
+        inLoop = false;
     }
 
     void broadcast(){
