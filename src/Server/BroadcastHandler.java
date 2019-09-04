@@ -2,6 +2,7 @@ package Server;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Arrays;
 
 class BroadcastHandler {
 
@@ -36,10 +37,13 @@ class BroadcastHandler {
         @Override
         public void run() {
 
+            byte[] buf = new byte[1024];
+            DatagramPacket packet = new DatagramPacket(buf, buf.length);
             while (inLoop){
 
-                byte[] buf = new byte[1024];
-                DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                Arrays.fill(buf, (byte) 0);
+//                DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                packet.setData(buf);
                 try {
                     mSocket.receive(packet);
 
@@ -48,9 +52,14 @@ class BroadcastHandler {
                     String cmd = data.substring(0, 30);
                     String username = data.substring(30);
 
+                    InetAddress remoteAddr = packet.getAddress();
+
+                    if (username.equals(mUsername)){
+                        continue;
+                    }
                     if (cmd.equals(Cs.LOGIN_STR_CMD)){
                         mCallback.gotClientOffline(username);
-                        mCallback.gotClientOnline(username, packet.getAddress());
+                        mCallback.gotClientOnline(username, remoteAddr);
                         // 接收到客户端上线时也广播一次登录信息
                         broadcast();
                     } else if (cmd.equals(Cs.LOGOUT_STR_CMD)) {

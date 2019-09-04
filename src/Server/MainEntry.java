@@ -38,9 +38,6 @@ public class MainEntry implements BroadcastCallback, CommandCallback, FileRecvCa
             e.printStackTrace();
         }
 
-        // todo: delete the codes below
-        System.out.println();
-        System.out.println("//////////this line is for reachable test, please delete this line when the application finished");
     }
 
     private MainEntry(String username, int beginPort){
@@ -56,6 +53,7 @@ public class MainEntry implements BroadcastCallback, CommandCallback, FileRecvCa
             printErrorMsg("start broadcast handler failed");
             return;
         }
+        bcHandler.broadcast();
         System.out.println("INFO: start broadcast handler success!");
 
         // start file receive thread;
@@ -72,7 +70,7 @@ public class MainEntry implements BroadcastCallback, CommandCallback, FileRecvCa
 
     @Override
     public void gotClientOnline(String user, InetAddress address) {
-//        System.out.println(user + " online");
+        System.out.println(user + " online");
         userList.put(user, address);
     }
 

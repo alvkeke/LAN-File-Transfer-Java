@@ -29,7 +29,9 @@ class FileSender {
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 
             dos.writeUTF(mDeviceName);
+            dos.flush();
             dos.writeUTF(file.getName());
+            dos.flush();
             byte[] buf = new byte[1024];
             int length;
             while ((length = fis.read(buf)) != -1){
