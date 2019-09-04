@@ -1,8 +1,10 @@
 package Server;
 
 class Cs {
-    static final String LOGIN_STR_CMD =  "_THIS_IS_AN_CLIENT_ONLINE_____";
-    static final String LOGOUT_STR_CMD = "_THIS_IS_AN_CLIENT_OFFLINE____";
+    static final String CMD_LOGIN_STR =         "_THIS_IS_AN_CLIENT_ONLINE_____";
+    static final String CMD_LOGOUT_STR =        "_THIS_IS_AN_CLIENT_OFFLINE____";
+    static final String CMD_BROADCAST_REQUEST = "_PLEASE_SEND_A_BROADCAST______";
+//    static final String CMD_BROADCAST_MSG =     "_THIS_IS_AN_BROADCAST_MESSAGE_";
 //    static String
 
 }

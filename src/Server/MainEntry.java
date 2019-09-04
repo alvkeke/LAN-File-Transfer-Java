@@ -54,6 +54,7 @@ public class MainEntry implements BroadcastCallback, CommandCallback, FileRecvCa
             return;
         }
         bcHandler.broadcast();
+        bcHandler.requestBroadcast();
         System.out.println("INFO: start broadcast handler success!");
 
         // start file receive thread;
@@ -65,6 +66,10 @@ public class MainEntry implements BroadcastCallback, CommandCallback, FileRecvCa
         System.out.println("INFO: start file receive handler success!");
 
         // todo: start command receive thread;
+
+
+        // todo: test
+//        sendFile("alv-rasp3b", "/home/alvis/desktop/test.py");
 
     }
 
@@ -99,6 +104,8 @@ public class MainEntry implements BroadcastCallback, CommandCallback, FileRecvCa
             return;
         }
 
+        //todo:delete
+        System.out.println("begin send file");
         InetAddress address = userList.get(deviceName);
         FileSender fs = new FileSender(mDeviceName, address, mBeginPort);
         fs.send(file);

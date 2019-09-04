@@ -11,9 +11,9 @@ import java.net.Socket;
 
 class FileSender {
 
-    String mDeviceName;
-    InetAddress mAddress;
-    int mPort;
+    private String mDeviceName;
+    private InetAddress mAddress;
+    private int mPort;
 
     FileSender(String deviceName, InetAddress address, int port){
         mDeviceName = deviceName;
