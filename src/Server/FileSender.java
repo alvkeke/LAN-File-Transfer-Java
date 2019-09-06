@@ -1,7 +1,5 @@
 package Server;
 
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
-
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +30,9 @@ class FileSender {
             dos.flush();
             dos.writeUTF(file.getName());
             dos.flush();
+            dos.writeLong(file.length());
+            dos.flush();
+
             byte[] buf = new byte[1024];
             int length;
             while ((length = fis.read(buf)) != -1){
@@ -39,6 +40,10 @@ class FileSender {
                 dos.flush();
             }
             System.out.println("file send success");
+
+            fis.close();
+            dos.close();
+            socket.close();
 
         } catch (IOException e) {
             e.printStackTrace();

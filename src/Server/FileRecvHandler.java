@@ -14,7 +14,7 @@ class FileRecvHandler {
         mCallback = callback;
     }
 
-    boolean init(int port){
+    boolean startListen(int port){
 
         inLoop = true;
         try {

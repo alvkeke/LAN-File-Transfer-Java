@@ -59,7 +59,7 @@ public class MainEntry implements BroadcastCallback, CommandCallback, FileRecvCa
 
         // start file receive thread;
         FileRecvHandler frHandler = new FileRecvHandler(this);
-        if(!frHandler.init(beginPort)){             // file receiver use TCP socket, so using the same port will be ok
+        if(!frHandler.startListen(beginPort)){             // file receiver use TCP socket, so using the same port will be ok
             printErrorMsg("start file receive handler failed");
             return;
         }
@@ -131,7 +131,7 @@ public class MainEntry implements BroadcastCallback, CommandCallback, FileRecvCa
     @Override
     public boolean isCredible(String username) {
         // todo : edit this method, read name in an exist configure file
-        return username.equals("alv-manjaro") || username.equals("alv-rasp3b");
+        return username.equals("alv-manjaro") || username.equals("alv-rasp3b") || username.equals("phone");
     }
 
     @Override

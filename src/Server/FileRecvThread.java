@@ -30,10 +30,13 @@ public class FileRecvThread implements Runnable{
 
             if (!mCallback.isCredible(username)){
                 mCallback.recvFileFailed(RECV_FAILED_INCREDIBLE, username);
+                dis.close();
+                mSocket.close();
+                return;
             }
 
             // todo: change the directory, load from the configure file
-            File dir = new File("/home/alvis/download/");
+            File dir = new File("/home/alvis/download/fileTP/");
             File file = new File(dir, filename);
             FileOutputStream fos = new FileOutputStream(file);
             byte[] buf = new byte[1024];
