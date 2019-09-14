@@ -1,6 +1,11 @@
 package Server;
 
+import java.util.ArrayList;
+import java.util.Set;
+
 public interface CommandCallback {
     void refreshUserList();
-    void sendFile(String deviceName, String fileFullPath);
+    boolean sendFile(String deviceName, String fileFullPath);
+    ArrayList<String> getCredibleUsers();
+    Set<String> getOnlineUsers();
 }

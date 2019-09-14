@@ -6,6 +6,10 @@ import java.util.Arrays;
 
 class BroadcastHandler {
 
+    static final String CMD_LOGIN_STR =         "_THIS_IS_AN_CLIENT_ONLINE_____";
+    static final String CMD_LOGOUT_STR =        "_THIS_IS_AN_CLIENT_OFFLINE____";
+    static final String CMD_BROADCAST_REQUEST = "_PLEASE_SEND_A_BROADCAST______";
+
     private String mUsername;
     private DatagramSocket mSocket;
     private int mBroadPort;
@@ -56,20 +60,20 @@ class BroadcastHandler {
 
                     InetAddress remoteAddr = packet.getAddress();
 
-                    // todo:此处应该判断地址，而不应该判断用户名，修改。这是程序薄弱之处。
+                    // 判断设备名可以防止同一个设备名的两个设备同时在线
                     if (username.equals(mUsername)){
                         continue;
                     }
 
                     switch (cmd) {
-                        case Cs.CMD_LOGIN_STR:
+                        case CMD_LOGIN_STR:
                             mCallback.gotClientOffline(username);
                             mCallback.gotClientOnline(username, remoteAddr);
                             break;
-                        case Cs.CMD_LOGOUT_STR:
+                        case CMD_LOGOUT_STR:
                             mCallback.gotClientOffline(username);
                             break;
-                        case Cs.CMD_BROADCAST_REQUEST:
+                        case CMD_BROADCAST_REQUEST:
                             broadcast();
                             break;
                     }
@@ -88,7 +92,7 @@ class BroadcastHandler {
 
     void broadcast(){
         // complete the method that broadcast this client's msg to other client
-        String strSend = Cs.CMD_LOGIN_STR + mUsername;
+        String strSend = CMD_LOGIN_STR + mUsername;
         byte[] data = strSend.getBytes();
         try {
             InetAddress address = InetAddress.getByName("255.255.255.255");
@@ -102,7 +106,7 @@ class BroadcastHandler {
     void requestBroadcast(){
 
         // complete the method that broadcast this client's msg to other client
-        String strSend = Cs.CMD_BROADCAST_REQUEST + mUsername;
+        String strSend = CMD_BROADCAST_REQUEST + mUsername;
         byte[] data = strSend.getBytes();
         try {
             InetAddress address = InetAddress.getByName("255.255.255.255");

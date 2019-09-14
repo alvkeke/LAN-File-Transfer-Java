@@ -2,13 +2,16 @@ package Server;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 import static Server.FileRecvThread.*;
 
 public class MainEntry implements BroadcastCallback, CommandCallback, FileRecvCallback{
 
     private HashMap<String, InetAddress> userList;
+    private ArrayList<String> credibleUsers;
     private BroadcastHandler bcHandler;
     private int mBeginPort;
     private String mDeviceName;
@@ -45,6 +48,7 @@ public class MainEntry implements BroadcastCallback, CommandCallback, FileRecvCa
         // load my device name from the configure file;
         mDeviceName = username;
 
+        credibleUsers = new ArrayList<>();
         userList = new HashMap<>();
         mBeginPort = beginPort;
 
@@ -65,11 +69,19 @@ public class MainEntry implements BroadcastCallback, CommandCallback, FileRecvCa
         }
         System.out.println("INFO: start file receive handler success!");
 
-        // todo: start command receive thread;
+        // start command receive thread;
 
+        CommandHandler cmdHandler = new CommandHandler(this);
+        if (!cmdHandler.startListen(beginPort+1)){
+            printErrorMsg("start cmd handler failed");
+            return;
+        }
+        System.out.println("INFO: start cmd handler success!");
 
-        // todo: test
-//        sendFile("alv-rasp3b", "/home/alvis/desktop/test.py");
+        // todo: load credible list from configure file;
+        credibleUsers.add("alv-xiaomi-4s");
+        credibleUsers.add("alv-xiaomi-9se");
+        credibleUsers.add("alv-rasp3b");
 
     }
 
@@ -94,22 +106,32 @@ public class MainEntry implements BroadcastCallback, CommandCallback, FileRecvCa
     public void refreshUserList() {
         userList.clear();
         bcHandler.broadcast();
+        bcHandler.requestBroadcast();
     }
 
     @Override
-    public void sendFile(String deviceName, String fileFullPath) {
+    public boolean sendFile(String deviceName, String fileFullPath) {
         File file = new File(fileFullPath);
         if (!file.exists()){
             printErrorMsg("file is not exist");
-            return;
+            return false;
         }
 
-        //todo:delete
-        System.out.println("begin send file");
         InetAddress address = userList.get(deviceName);
         FileSender fs = new FileSender(mDeviceName, address, mBeginPort);
         fs.send(file);
 
+        return true;
+    }
+
+    @Override
+    public ArrayList<String> getCredibleUsers() {
+        return credibleUsers;
+    }
+
+    @Override
+    public Set<String> getOnlineUsers() {
+        return userList.keySet();
     }
 
     private static void printHelp(){
@@ -130,8 +152,12 @@ public class MainEntry implements BroadcastCallback, CommandCallback, FileRecvCa
 
     @Override
     public boolean isCredible(String username) {
-        // todo : edit this method, read name in an exist configure file
-        return username.equals("alv-manjaro") || username.equals("alv-rasp3b") || username.equals("phone");
+        for (String s : credibleUsers){
+            if (s.equals(username)){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
