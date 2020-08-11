@@ -1,9 +1,11 @@
 package Server;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Properties;
 import java.util.Set;
 
 import static Server.FileRecvThread.*;
@@ -77,6 +79,13 @@ public class MainEntry implements BroadcastCallback, CommandCallback, FileRecvCa
             return;
         }
         System.out.println("INFO: start cmd handler success!");
+
+        // todo: open a properties file.
+//        try {
+//            Properties p = new Properties();
+//            p.load(new InputStream());
+//        }
+
 
         // todo: load credible list from configure file;
         credibleUsers.add("alv-xiaomi-4s");

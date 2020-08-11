@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Arrays;
 
 class FileSender {
 
@@ -17,37 +19,47 @@ class FileSender {
         mDeviceName = deviceName;
         mAddress = address;
         mPort = port;
-
     }
 
-    void send(File file){
-        try {
-            Socket socket = new Socket(mAddress, mPort);
-            FileInputStream fis = new FileInputStream(file);
+    void send(File mFile){
+
+        try
+        {
+            if (mFile.isDirectory() || !mFile.exists())
+            {
+                return;
+            }
+            long fileLength = mFile.length();
+            // todo: 修改这里的设备名称
+            byte[] deviceName = Arrays.copyOf("alv-xiaomi-4s".getBytes(), 256);
+            byte[] filename = Arrays.copyOf(mFile.getName().getBytes(), 256);
+
+            Socket socket = new Socket();
+            socket.connect(new InetSocketAddress(mAddress, mPort));
+
+            // todo: 完成文件传输的功能
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-
-            dos.writeUTF(mDeviceName);
-            dos.flush();
-            dos.writeUTF(file.getName());
-            dos.flush();
-            dos.writeLong(file.length());
+            dos.write(deviceName);
+            dos.write(filename);
+            dos.writeLong(fileLength);
             dos.flush();
 
+            FileInputStream fis = new FileInputStream(mFile);
             byte[] buf = new byte[1024];
-            int length;
-            while ((length = fis.read(buf)) != -1){
+            int length = 0;
+            long progress = 0;
+            while((length = fis.read(buf, 0, buf.length)) != -1) {
                 dos.write(buf, 0, length);
                 dos.flush();
+                progress += length;
             }
-            System.out.println("file send success");
 
-            fis.close();
             dos.close();
             socket.close();
-
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             e.printStackTrace();
-            System.out.println("file send failed");
         }
     }
 }
