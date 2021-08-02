@@ -3,8 +3,9 @@ package Server.Send;
 import Server.Device;
 import Server.Recv.Task;
 
-import java.io.File;
+import java.io.*;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 
 public class SendHandler extends Thread
@@ -35,11 +36,16 @@ public class SendHandler extends Thread
         }
     }
 
+    public void addTask(Task t)
+    {
+        mWaitingList.add(t);
+    }
+
     private void handleTask(Task t)
     {
 
         File file = t.getFile();
-        if (!file.exists())
+        if (!file.exists() || file.isDirectory())
         {
             System.out.print("SendHandler[ERR] : Missed file: ");
             System.out.println(file);
@@ -52,7 +58,10 @@ public class SendHandler extends Thread
         try
         {
             socket.connect(device.getInetSocketAddress(), 1000);
-            sendFile(socket, file);
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            sendFile(dos, file);
+
+            dos.close();
             socket.close();
         }
         catch (Exception e)
@@ -62,9 +71,33 @@ public class SendHandler extends Thread
 
     }
 
-    private void sendFile(Socket socket, File f)
+    private void sendFile(DataOutputStream dos, File f) throws IOException
     {
-        System.out.println(f.getName());
+        // len[8], name_len[4], name[~], data[~]
+        ByteBuffer bbf = ByteBuffer.allocate(Long.BYTES);
+        bbf.putLong(f.length());
+        dos.write(bbf.array());
+
+        bbf = ByteBuffer.allocate(Integer.BYTES);
+        bbf.putInt(f.getName().length());
+        dos.write(bbf.array());
+
+        dos.writeBytes(f.getName());
+
+        FileInputStream fis = new FileInputStream(f);
+        byte[] buf = new byte[1024];
+
+        dos.flush();
+
+        int read_len;
+        while((read_len = fis.read(buf)) > 0)
+        {
+            dos.write(buf, 0, read_len);
+            dos.flush();
+        }
+
+        fis.close();
+
     }
 
 

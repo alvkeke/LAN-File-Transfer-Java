@@ -1,16 +1,23 @@
 package Server;
 
 
+import Server.Ctrl.CtrlCallback;
+import Server.Ctrl.CtrlHandler;
 import Server.Recv.RecvHandler;
 import Server.Recv.Task;
 import Server.Send.SendHandler;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 
-public class MainEntry {
+public class MainEntry implements CtrlCallback
+{
 
     ArrayBlockingQueue<Task> queue;
+    SendHandler mSendHandler;
+    RecvHandler mRecvHandler;
+    CtrlHandler mCtrlHandler;
 
     public static void main(String[] args)
     {
@@ -21,14 +28,41 @@ public class MainEntry {
     {
         queue = new ArrayBlockingQueue<>(1024);
 
-        SendHandler sendHandler = new SendHandler(queue);
-        RecvHandler recvHandler = new RecvHandler();
-        recvHandler.initialize(12345);
-        recvHandler.start();
-        sendHandler.start();
+        mSendHandler = new SendHandler(queue);
+        mRecvHandler = new RecvHandler();
+        mCtrlHandler = new CtrlHandler(this);
+        try
+        {
+            mCtrlHandler.start(10001);
+            mRecvHandler.start(10000);
+            mSendHandler.start();
+            new Thread(new AAA()).start();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
 
-        new Thread(new AAA()).start();
+    }
 
+    @Override
+    public void sendFile(File f, Device dev)
+    {
+        mSendHandler.addTask(new Task(f, dev));
+    }
+
+    @Override
+    public ArrayList<Device> scanDevice()
+    {
+        ArrayList<Device> array = new ArrayList<>();
+
+        return array;
+    }
+
+    @Override
+    public void setSavePath(File dir)
+    {
+        mRecvHandler.setSavePath(dir);
     }
 
     class AAA implements Runnable
@@ -36,12 +70,12 @@ public class MainEntry {
         @Override
         public void run()
         {
-            for (int i=0; i<5; i++)
+            for (int i=0; i<1; i++)
             {
                 try
                 {
-                    queue.add(new Task("README.md", new Device("Device", "127.0.0.1", 12345)));
-//                    Thread.sleep(1000);
+                    queue.add(new Task("/home/alvis/workspace/LAN-File-Transfer-Java/README.md", new Device("Device", "127.0.0.1", 10000)));
+                    Thread.sleep(1000);
                 }
                 catch (Exception e)
                 {
