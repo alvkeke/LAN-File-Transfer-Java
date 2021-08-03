@@ -1,6 +1,7 @@
 package Server;
 
 
+import Server.Scan.Device;
 import Server.Ctrl.CtrlCallback;
 import Server.Ctrl.CtrlHandler;
 import Server.Recv.RecvHandler;

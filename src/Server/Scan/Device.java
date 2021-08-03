@@ -1,4 +1,4 @@
-package Server;
+package Server.Scan;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;

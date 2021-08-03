@@ -1,6 +1,6 @@
 package Server.Ctrl;
 
-import Server.Device;
+import Server.Scan.Device;
 
 import java.io.File;
 import java.util.ArrayList;

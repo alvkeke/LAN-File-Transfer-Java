@@ -1,6 +1,6 @@
 package Server.Send;
 
-import Server.Device;
+import Server.Scan.Device;
 import Server.Recv.Task;
 
 import java.io.*;

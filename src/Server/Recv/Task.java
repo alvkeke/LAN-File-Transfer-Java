@@ -1,6 +1,6 @@
 package Server.Recv;
 
-import Server.Device;
+import Server.Scan.Device;
 
 import java.io.File;
 
