@@ -3,6 +3,7 @@ package Server.Recv;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Date;
 
 public class RecvHandler extends Thread
 {
@@ -86,6 +87,8 @@ public class RecvHandler extends Thread
                 return;
             }
 
+            File fout;
+
             try
             {
 
@@ -97,37 +100,55 @@ public class RecvHandler extends Thread
                 byte[] nameBuf = new byte[nameLen];
                 int nameLenRead = dis.read(nameBuf);
 
-                System.out.print("File length: ");
-                System.out.println(fileLen);
+                if (nameLenRead != nameLen)
+                {
+                    System.out.println("RecvHandler[ERR] : File received failed: file name data not enough.");
+                }
 
-                System.out.print("Name length: ");
-                System.out.print(nameLen);
-                System.out.print(" : ");
-                System.out.println(nameLenRead);
+                String filename = new String(nameBuf);
+                fout = new File(mSavePath, filename);
+                if (fout.exists())
+                {
+                    int ibreak = filename.lastIndexOf(".");
+                    String suffix = filename.substring(ibreak);
+                    String prefix = filename.substring(0, ibreak);
+                    long timestamp = new Date().getTime();
 
-                System.out.print("Name: ");
-                System.out.println(new String(nameBuf));
+                    filename = prefix + '.' + timestamp + suffix;
+
+                    fout = new File(mSavePath, filename);
+                    System.out.println("new File name: " + filename);
+                }
 
                 byte[] read_buf = new byte[1024];
                 long data_left = fileLen;
 
-                System.out.println("=============== Data Read ===============");
+                FileOutputStream fos = new FileOutputStream(fout);
+
                 while(data_left>0)
                 {
                     int read_len = dis.read(read_buf);
-                    System.out.println("read length = " + read_len);
-//                    System.out.println(new String(read_buf, read_len));
-                    if (read_len < 0) break;
+
+                    fos.write(read_buf, 0, read_len);
+
                     data_left -= read_len;
                 }
-                System.out.println("=============== Data Read ===============");
+                fos.flush();
+                fos.close();
 
                 dis.close();
+
+                if (data_left != 0)
+                {
+                    System.out.println("RecvHandler[ERR] : File received failed: wrong data length, but data was stored.");
+                    return;
+                }
 
                 System.out.println("RecvHandler[SUC] : File received successfully.");
             }
             catch (IOException e)
             {
+                System.out.println("RecvHandler[ERR] : File received failed: Exception.");
                 e.printStackTrace();
             }
 
