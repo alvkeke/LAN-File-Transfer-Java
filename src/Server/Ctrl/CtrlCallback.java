@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public interface CtrlCallback
 {
-    void sendFile(File f, Device dev);
+    boolean sendFile(File f, Device dev);
     ArrayList<Device> scanDevice();
-    void setSavePath(File dir);
+    boolean setSavePath(File dir);
 }
