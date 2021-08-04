@@ -56,7 +56,7 @@ public class RecvHandler extends Thread
             {
                 Socket s = mSocket.accept();
                 new Thread(new RecvChildThread(s)).start();
-
+                s.close();
             }
             catch (IOException e)
             {
@@ -70,7 +70,7 @@ public class RecvHandler extends Thread
     class RecvChildThread implements Runnable
     {
 
-        private Socket mSocket;
+        private final Socket mSocket;
 
         RecvChildThread(Socket socket)
         {
