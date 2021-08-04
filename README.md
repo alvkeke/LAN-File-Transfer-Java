@@ -47,8 +47,36 @@
 
 ### 传输协议
 
-TODO
+下表为文件传输时使用的数据格式，表中出现的长度字段都使用小端序进行传输。
+
+此应用使用TCP完成数据传输，所以可靠性由TCP协议保证。
+
+| 字段 | 长度 | 说明 |
+|:---:|:---:|:---|
+| datalen | 8 bytes | 文件长度 |
+| namelen | 4 bytes | 文件名长度 |
+| name | n1 | 文件名字段，长度有`namelen`字段指定 |
+| data | n2 | 文件数据字段，长度由`datalen`字段指定 |
+
 
 ### 控制协议
 
-TODO
+控制命令采用文本格式，每一个换行为命令的结束。下为目前可用命令：
+
+* `scan`
+  * 扫描局域网中可用设备，返回值有如下格式：
+    * `Name1 IP_Addr1 Port1\nName2 IP_Addr2 Port2\n...`
+  * 每一个设备的条目拥有 设备名称(Name)、IP地址(IP_Addr)、端口(Port) 三项数据
+  * 一个条目的的多个数据通过空格进行分割，多个条目由换行符进行分割
+* `send <full-path> <ip> <port>`
+  * `full-path`: 文件全路径
+  * `ip`: 目标设备IP地址
+  * `port`: 目标设备端口
+* `set <conf> <value>`
+  * 设置配置，当前可用`conf`项为：
+    * `save-path`: 接收文件保存路径
+  * 设置`conf`为`value`
+  * 有返回值，`"success"` or `"failed"`
+* `exit`
+  * 断开控制连接
+  * 有返回值，`"success"`, 无返回值时异常
