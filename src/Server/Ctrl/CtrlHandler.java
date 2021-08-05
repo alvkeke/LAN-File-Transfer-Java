@@ -63,7 +63,11 @@ public class CtrlHandler extends Thread
                 try
                 {
                     String cmdline = br.readLine();
-                    if (cmdline == null) continue;
+                    if (cmdline == null)
+                    {
+                        System.out.println("CtrlHandler[ERR]: connection closed exception.");
+                        break;
+                    }
                     String[] splits = cmdline.split(" ");
                     if (splits.length == 0) continue;
 
@@ -154,8 +158,6 @@ public class CtrlHandler extends Thread
 
             try
             {
-                bw.write("success\n");
-                bw.flush();
                 bw.close();
             }
             catch (IOException e)
@@ -166,12 +168,22 @@ public class CtrlHandler extends Thread
             try
             {
                 br.close();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+            try
+            {
                 s.close();
             }
             catch (IOException e)
             {
                 e.printStackTrace();
             }
+
+            System.out.println("CtrlHandler[INFO]: Ctrl session closed.");
 
         }
     }
