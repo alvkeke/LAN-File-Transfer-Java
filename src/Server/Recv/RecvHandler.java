@@ -11,6 +11,8 @@ public class RecvHandler extends Thread
     private ServerSocket mSocket;
     private File mSavePath;
 
+    private boolean firstRecv = true;
+
     public RecvHandler()
     {
         mSavePath = new File(".");
@@ -56,7 +58,6 @@ public class RecvHandler extends Thread
             {
                 Socket s = mSocket.accept();
                 new Thread(new RecvChildThread(s)).start();
-                s.close();
             }
             catch (IOException e)
             {
@@ -129,6 +130,12 @@ public class RecvHandler extends Thread
                 {
                     int read_len = dis.read(read_buf);
 
+                    if (read_len < 0)
+                    {
+                        System.out.println("RecvHandler[ERR] : Connection closed exception.");
+                        break;
+                    }
+
                     fos.write(read_buf, 0, read_len);
 
                     data_left -= read_len;
@@ -145,13 +152,14 @@ public class RecvHandler extends Thread
                 }
 
                 System.out.println("RecvHandler[SUC] : File received successfully.");
+
+                mSocket.close();
             }
             catch (IOException e)
             {
                 System.out.println("RecvHandler[ERR] : File received failed: Exception.");
                 e.printStackTrace();
             }
-
 
         }
     }
