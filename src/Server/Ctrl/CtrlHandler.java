@@ -15,6 +15,7 @@ import java.util.Objects;
 public class CtrlHandler extends Thread
 {
 
+    private boolean mIsRunning;
     private ServerSocket mSocket;
     private final CtrlCallback mCallback;
 
@@ -23,8 +24,21 @@ public class CtrlHandler extends Thread
         mCallback = callback;
     }
 
+    public void exit()
+    {
+        mIsRunning = false;
+        try
+        {
+            mSocket.close();
+        }
+        catch (IOException ignored)
+        {
+        }
+    }
+
     public void start(int port) throws Exception
     {
+        mIsRunning = true;
         mSocket = new ServerSocket(port);
         super.start();
     }
@@ -38,7 +52,7 @@ public class CtrlHandler extends Thread
             return;
         }
 
-        while (true)
+        while (mIsRunning)
         {
             Socket s;
             BufferedWriter bw;
@@ -58,7 +72,7 @@ public class CtrlHandler extends Thread
                 continue;
             }
 
-            while (true)
+            while (mIsRunning)
             {
                 try
                 {

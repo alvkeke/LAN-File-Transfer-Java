@@ -8,6 +8,7 @@ import java.util.Date;
 public class RecvHandler extends Thread
 {
 
+    private boolean mIsRunning;
     private ServerSocket mSocket;
     private File mSavePath;
 
@@ -36,8 +37,21 @@ public class RecvHandler extends Thread
         return  true;
     }
 
+    public void exit()
+    {
+        mIsRunning = false;
+        try
+        {
+            mSocket.close();
+        }
+        catch (IOException ignored)
+        {
+        }
+    }
+
     public void start(int port) throws Exception
     {
+        mIsRunning = true;
         mSocket = new ServerSocket(port);
         super.start();
     }
@@ -52,17 +66,28 @@ public class RecvHandler extends Thread
             return;
         }
 
-        while(true)
+        Socket s = null;
+        while(mIsRunning)
         {
             try
             {
-                Socket s = mSocket.accept();
+                s = mSocket.accept();
                 new Thread(new RecvChildThread(s)).start();
             }
             catch (IOException e)
             {
                 e.printStackTrace();
             }
+        }
+
+        try
+        {
+            if (s != null) s.close();
+            mSocket.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
         }
 
     }

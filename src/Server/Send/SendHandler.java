@@ -11,6 +11,7 @@ import java.util.concurrent.BlockingQueue;
 public class SendHandler extends Thread
 {
 
+    private boolean mIsRunning;
     private BlockingQueue<Task> mWaitingList;
 
     public SendHandler(BlockingQueue<Task> queue)
@@ -18,11 +19,23 @@ public class SendHandler extends Thread
         mWaitingList = queue;
     }
 
+    public void exit()
+    {
+        mIsRunning = false;
+    }
+
+    @Override
+    public synchronized void start()
+    {
+        mIsRunning = true;
+        super.start();
+    }
+
     @Override
     public void run()
     {
 
-        while(true)
+        while(mIsRunning)
         {
             try
             {
