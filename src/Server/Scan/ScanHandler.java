@@ -3,6 +3,7 @@ package Server.Scan;
 import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
 public class ScanHandler extends Thread
@@ -51,6 +52,7 @@ public class ScanHandler extends Thread
         int bb_len = name_buf.length + 4;
         // bb_len = len(name_buf) + len(port);
         ByteBuffer bb = ByteBuffer.allocate(bb_len);
+        bb.order(ByteOrder.LITTLE_ENDIAN);
 
         bb.putInt(mCallback.getRecvPort());
         bb.put(name_buf);
@@ -104,6 +106,7 @@ public class ScanHandler extends Thread
             else
             {
                 ByteBuffer bb = ByteBuffer.wrap(recv_buf);
+                bb.order(ByteOrder.LITTLE_ENDIAN);
                 InetAddress addr = packet.getAddress();
                 int port = bb.getInt();
 
