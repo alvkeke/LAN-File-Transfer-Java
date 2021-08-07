@@ -36,10 +36,13 @@ public class CtrlHandler extends Thread
         }
     }
 
-    public void start(int port) throws Exception
+    public void start(int port, boolean localOnly) throws Exception
     {
         mIsRunning = true;
-        mSocket = new ServerSocket(port);
+        if (localOnly)
+            mSocket = new ServerSocket(port, 0, InetAddress.getByName("localhost"));
+        else
+            mSocket = new ServerSocket(port);
         super.start();
     }
 

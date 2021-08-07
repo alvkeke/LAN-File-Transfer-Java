@@ -50,7 +50,7 @@ public class MainEntry implements CtrlCallback, ScanCallback
         mScanHandler = new ScanHandler(this);
         try
         {
-            mCtrlHandler.start(CTRL_PORT);
+            mCtrlHandler.start(CTRL_PORT, true);
             mRecvHandler.start(RECV_PORT);
             mSendHandler.start();
             mScanHandler.start(SCAN_PORT);
