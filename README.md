@@ -4,6 +4,10 @@
 
 这是新版的文件传输工具，此工具仍然分为前后端，此为后端程序。
 
+前端工具： 
+* [Linux平台命令行工具](https://github.com/alvkeke/LAN-File-Transfer-Frontend)
+* [通用Java图形前端]()
+
 ## 程序结构
 
 此程序将具体功能模块化分割，分别分割为：
