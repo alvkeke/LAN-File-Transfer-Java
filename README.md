@@ -1,12 +1,14 @@
 # File-Transfer-Java
 
+If you need a README in English, please refer to [README_EN](./README_EN.md)
+
 ## 概述
 
 这是新版的文件传输工具，此工具仍然分为前后端，此为后端程序。
 
 前端工具： 
 * [Linux平台命令行工具](https://github.com/alvkeke/LAN-File-Transfer-Frontend)
-* [通用Java图形前端]()
+* [通用Java图形前端](https://github.com/alvkeke/LAN-File-Transfer-Frontend-UI)
 
 ## 使用方法
 
@@ -71,7 +73,7 @@
 |:---:|:---:|:---|
 | datalen | 8 bytes | 文件长度 |
 | namelen | 4 bytes | 文件名长度 |
-| name | n1 | 文件名字段，长度有`namelen`字段指定 |
+| name | n1 | 文件名字段，长度由`namelen`字段指定 |
 | data | n2 | 文件数据字段，长度由`datalen`字段指定 |
 
 
@@ -85,7 +87,7 @@
 * `get <data>`
     * 从服务中获取数据,当前可选`data`项为:
         * `dev-ol`: 获取局域网中在线设备，返回值格式为：
-            * `Name1 IP_Addr1 Port1\nName2 IP_Addr2 Port2\n...`
+            * `Name1 IP_Addr1 Port1|Name2 IP_Addr2 Port2|...`
             * 每一个设备的条目拥有 设备名称(Name)、IP地址(IP_Addr)、端口(Port) 三项数据
             * 一个条目的的多个数据通过空格进行分割，多个条目由换行符进行分割
         * `save-path`: 文件接收路径
