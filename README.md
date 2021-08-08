@@ -71,16 +71,16 @@
     * 扫描局域网中可用设备，此命令不返回设备信息
     * 返回值为`"success"`或`"failed"`
 * `get <data>`
-    * 从服务中获取数据
-    * 当前可选`data`项为:
+    * 从服务中获取数据,当前可选`data`项为:
         * `dev-ol`: 获取局域网中在线设备，返回值格式为：
-        * `Name1 IP_Addr1 Port1\nName2 IP_Addr2 Port2\n...`
-        * 每一个设备的条目拥有 设备名称(Name)、IP地址(IP_Addr)、端口(Port) 三项数据
-        * 一个条目的的多个数据通过空格进行分割，多个条目由换行符进行分割
+            * `Name1 IP_Addr1 Port1\nName2 IP_Addr2 Port2\n...`
+            * 每一个设备的条目拥有 设备名称(Name)、IP地址(IP_Addr)、端口(Port) 三项数据
+            * 一个条目的的多个数据通过空格进行分割，多个条目由换行符进行分割
+        * `save-path`: 文件接收路径
+            * 返回值为一个字符串
 * `set <conf> <value>`
-    * 设置配置，当前可用`conf`项为：
+    * 设置`conf`为`value`，当前可用`conf`项为：
         * `save-path`: 接收文件保存路径
-    * 设置`conf`为`value`
     * 有返回值，`"success"` or `"failed"`
 * `send-addr <ip> <port> <file-path>`
     * 通过`IP`与`Port`指定设备，并向其发送文件

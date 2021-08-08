@@ -129,6 +129,10 @@ public class CtrlHandler extends Thread
                             .append("|");
                 }
             }
+            else if ("save-path".equals(data_item))
+            {
+                sb.append(mCallback.getSavePath());
+            }
             else
                 sb.append("failed: data item not found.");
         }

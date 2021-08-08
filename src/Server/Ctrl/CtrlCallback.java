@@ -12,4 +12,5 @@ public interface CtrlCallback
     ArrayList<Device> getOnlineDevices();
     boolean sendFile(File f, Device dev);
     boolean setSavePath(File dir);
+    String getSavePath();
 }

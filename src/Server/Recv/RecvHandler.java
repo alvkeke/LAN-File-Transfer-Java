@@ -37,6 +37,11 @@ public class RecvHandler extends Thread
         return  true;
     }
 
+    public String getSavePath()
+    {
+        return mSavePath.getAbsolutePath();
+    }
+
     public void exit()
     {
         mIsRunning = false;

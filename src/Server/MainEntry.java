@@ -129,6 +129,12 @@ public class MainEntry implements CtrlCallback, ScanCallback
     }
 
     @Override
+    public String getSavePath()
+    {
+        return mRecvHandler.getSavePath();
+    }
+
+    @Override
     public void foundDevice(Device dev)
     {
         if (dev == null) return;
