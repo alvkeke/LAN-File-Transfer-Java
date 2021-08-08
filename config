@@ -1,0 +1,10 @@
+
+# this is a comment
+
+recv port = 20000
+
+scan port = 20000
+
+ctrl port = 15000
+
+device name = My Device

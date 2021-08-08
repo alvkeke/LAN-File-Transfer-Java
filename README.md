@@ -8,6 +8,18 @@
 * [Linux平台命令行工具](https://github.com/alvkeke/LAN-File-Transfer-Frontend)
 * [通用Java图形前端]()
 
+## 使用方法
+
+本程序目前可以通过配置文件设置端口/设备名等属性, 且目前程序仅可读取默认的配置文件, 该文件应该置于程序/jar包目录下的,且命名为`config`
+
+配置文件通过`key = value`的结构组织, 允许使用注释,注释行以`#`为开头
+
+目前可用的属性字段为:
+* `recv port`
+* `scan port`
+* `ctrl port`
+* `device name`
+
 ## 程序结构
 
 此程序将具体功能模块化分割，分别分割为：

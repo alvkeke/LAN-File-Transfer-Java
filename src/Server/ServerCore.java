@@ -14,75 +14,66 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 
-public class MainEntry implements CtrlCallback, ScanCallback
+public class ServerCore implements CtrlCallback, ScanCallback
 {
 
     private final ArrayBlockingQueue<Task> queue;
     private final ArrayList<Device> mAvailableDevices;
 
-    private final SendHandler mSendHandler;
-    private final RecvHandler mRecvHandler;
-    private final CtrlHandler mCtrlHandler;
-    private final ScanHandler mScanHandler;
+    private SendHandler mSendHandler;
+    private RecvHandler mRecvHandler;
+    private CtrlHandler mCtrlHandler;
+    private ScanHandler mScanHandler;
 
-    private final String DEV_NAME = "GameBook[Win]";
+    private final String mDeviceName;
     // ========== TCP Port ==============
-    private final int CTRL_PORT = 10001;
-    private final int RECV_PORT = 10000;
+    private final int mPortCtrl;
+    private final int mPortRecv;
     // ========== UDP Port ==============
-    private final int SCAN_PORT = 10000;
+    private final int mPortScan;
+
 
     public static void main(String[] args)
     {
-        new MainEntry();
+
+        Configure conf = new Configure("config");
+        ServerCore server = new ServerCore(conf);
+        server.startServer();
+
     }
 
-    private MainEntry()
+    private ServerCore(Configure conf)
     {
+
         mAvailableDevices = new ArrayList<>();
         queue = new ArrayBlockingQueue<>(1024);
 
+        mDeviceName = conf.getDeviceName();
+        mPortCtrl = conf.tcpPortCtrl;
+        mPortRecv = conf.tcpPortRecv;
+        mPortScan = conf.udpPortScan;
+
+    }
+
+    private void startServer()
+    {
         mSendHandler = new SendHandler(queue);
         mRecvHandler = new RecvHandler();
         mCtrlHandler = new CtrlHandler(this);
         mScanHandler = new ScanHandler(this);
         try
         {
-            mCtrlHandler.start(CTRL_PORT, false);
-            mRecvHandler.start(RECV_PORT);
+            mCtrlHandler.start(mPortCtrl, false);
+            mRecvHandler.start(mPortRecv);
             mSendHandler.start();
-            mScanHandler.start(SCAN_PORT);
+            mScanHandler.start(mPortScan);
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
 
-        boolean ret = mScanHandler.startScan();
-        System.out.println(ret);
-
-        try
-        {
-            Thread.sleep(1000);
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
-
-
-        try
-        {
-            Thread.sleep(1000);
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
-
-
-
-
+        mScanHandler.startScan();
     }
 
     @Override
@@ -156,13 +147,13 @@ public class MainEntry implements CtrlCallback, ScanCallback
     @Override
     public String getDeviceName()
     {
-        return DEV_NAME;
+        return mDeviceName;
     }
 
     @Override
     public int getRecvPort()
     {
-        return RECV_PORT;
+        return mPortRecv;
     }
 
 }
