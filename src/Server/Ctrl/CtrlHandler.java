@@ -1,16 +1,13 @@
 package Server.Ctrl;
 
-import Server.Recv.RecvHandler;
 import Server.Scan.Device;
 
-import javax.sound.midi.SysexMessage;
 import java.io.*;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.Arrays;
 
 public class CtrlHandler extends Thread
 {
@@ -46,6 +43,104 @@ public class CtrlHandler extends Thread
         super.start();
     }
 
+    private String handleCommand(ArrayList<String> cmdline)
+    {
+
+        if (cmdline.size() == 0) return "";
+
+        String cmd = cmdline.get(0);
+        StringBuilder sb = new StringBuilder();
+
+        if ("exit".equals(cmd))
+        {
+            return null;
+        }
+        else if ("scan".equals(cmd))
+        {
+            boolean ret = mCallback.scanDevice();
+            if (ret)
+                sb.append("success");
+            else
+                sb.append("failed: cannot send request package.");
+        }
+        else if ("send".equals(cmd) && cmdline.size() == 3)
+        {
+            Device dev = mCallback.findDevice(cmdline.get(1));
+            if (dev == null)
+            {
+                sb.append("failed: cannot find device has name: ")
+                        .append(cmdline.get(1));
+            }
+            else
+            {
+                if (mCallback.sendFile(new File(cmdline.get(2)), dev))
+                    sb.append("success");
+                else
+                    sb.append("failed: file is not exist.");
+            }
+        }
+        else if ("send-addr".equals(cmd) && cmdline.size() == 4)
+        {
+            try
+            {
+                InetAddress addr = InetAddress.getByName(cmdline.get(1));
+                int port = Integer.parseInt(cmdline.get(2));
+
+                // device name is useless here.
+                if (!mCallback.sendFile(new File(cmdline.get(3)), new Device("", addr, port)))
+                    sb.append("failed: file is not exist.");
+                else
+                    sb.append("success");
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                sb.append("failed: ip or port input error.");
+            }
+        }
+        else if ("set".equals(cmd) && cmdline.size() == 3)
+        {
+
+            String data_item = cmdline.get(1);
+            if ("save-path".equals(data_item))
+            {
+                if (mCallback.setSavePath(new File(cmdline.get(2))))
+                    sb.append("success");
+                else
+                    sb.append("failed: not a valid directory.");
+
+            }
+            else
+                sb.append("failed: configuration item not found.");
+        }
+        else if ("get".equals(cmd) && cmdline.size() == 2)
+        {
+            String data_item = cmdline.get(1);
+            if ("dev-ol".equals(data_item))
+            {
+                ArrayList<Device> devices = mCallback.getOnlineDevices();
+                for (Device d : devices)
+                {
+                    sb.append(d.getName())
+                            .append(" ")
+                            .append(d.getInetSocketAddress().getAddress().toString())
+                            .append(" ")
+                            .append(d.getInetSocketAddress().getPort())
+                            .append("|");
+                }
+            }
+            else
+                sb.append("failed: data item not found.");
+        }
+        else
+        {
+            sb.append("failed: command not found.");
+        }
+
+        sb.append("\n");
+        return sb.toString();
+    }
+
     @Override
     public void run()
     {
@@ -75,6 +170,8 @@ public class CtrlHandler extends Thread
                 continue;
             }
 
+            System.out.println("CtrlHandler[I] : got new control connection.");
+
             while (mIsRunning)
             {
                 try
@@ -88,80 +185,15 @@ public class CtrlHandler extends Thread
                     String[] splits = cmdline.split(" ");
                     if (splits.length == 0) continue;
 
-                    if (Objects.equals(splits[0], "exit"))
-                    {
+                    ArrayList<String> split_list = new ArrayList<>(Arrays.asList(splits));
+                    split_list.removeAll(Arrays.asList("", null));
+
+                    String ret = handleCommand(split_list);
+                    if (ret == null)
                         break;
-                    }
-                    else if (Objects.equals(splits[0], "send"))
+                    else if (!ret.equals(""))
                     {
-                        if (splits.length != 4)
-                        {
-                            bw.write("failed: wrong params count\n");
-                            bw.flush();
-                            continue;
-                        }
-
-                        try
-                        {
-                            InetAddress addr = InetAddress.getByName(splits[2]);
-                            int port = Integer.parseInt(splits[3]);
-
-                            // device name is useless here.
-                            if (!mCallback.sendFile(new File(splits[1]), new Device("", addr, port)))
-                            {
-                                bw.write("failed: params error\n");
-                                bw.flush();
-                            }
-                            bw.write("success\n");
-                            bw.flush();
-                        }
-                        catch (Exception e)
-                        {
-                            e.printStackTrace();
-                            bw.write("failed: params error\n");
-                            bw.flush();
-                        }
-                    }
-                    else if (Objects.equals(splits[0], "scan"))
-                    {
-                        ArrayList<Device> array = mCallback.scanDevice();
-                        for (Device d : array)
-                        {
-                            bw.write(d.getName());
-                            bw.write(" ");
-                            InetSocketAddress so_addr = d.getInetSocketAddress();
-                            String sip = so_addr.getHostString();
-                            String sport = String.valueOf(so_addr.getPort());
-                            bw.write(sip);
-                            bw.write(" ");
-                            bw.write(sport);
-                            bw.write("\n");
-                        }
-                        bw.flush();
-                    }
-                    else if (Objects.equals(splits[0], "set"))
-                    {
-                        if (splits.length != 3)
-                        {
-                            bw.write("failed: wrong params count\n");
-                            bw.flush();
-                            continue;
-                        }
-
-                        boolean ret;
-                        switch (splits[1])
-                        {
-                            case "save-path":
-                                ret = mCallback.setSavePath(new File(splits[2]));
-                                break;
-                            default:
-                                ret = false;
-                        }
-                        if (ret)
-                            bw.write("success\n");
-                        else
-                            bw.write("failed");
-
+                        bw.write(ret);
                         bw.flush();
                     }
                 }
@@ -171,7 +203,6 @@ public class CtrlHandler extends Thread
                 }
 
             }
-
 
             try
             {

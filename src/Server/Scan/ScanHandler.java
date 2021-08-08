@@ -5,6 +5,7 @@ import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Semaphore;
 
 public class ScanHandler extends Thread
 {
@@ -41,9 +42,9 @@ public class ScanHandler extends Thread
         super.start();
     }
 
-    public void startScan()
+    public boolean startScan()
     {
-        new Thread(new ScanStartThread()).start();
+        return new ScanStartThread().tryScan();
     }
 
     public void responseScan(InetAddress requestAddr)
@@ -99,18 +100,18 @@ public class ScanHandler extends Thread
 
             int pkg_len = packet.getLength();
 
-            if (pkg_len == 4 && new String(recv_buf, 0, pkg_len).equals(mScanCmd))
-            {
+            if (pkg_len == mScanCmdBytes.length && new String(recv_buf, 0, pkg_len).equals(mScanCmd))
+            {   // response a scan request, notify the here is a valid device.
                 responseScan(packet.getAddress());
             }
             else
-            {
+            {   // got an valid device response; this part will take place unpredictably.
                 ByteBuffer bb = ByteBuffer.wrap(recv_buf);
                 bb.order(ByteOrder.LITTLE_ENDIAN);
                 InetAddress addr = packet.getAddress();
                 int port = bb.getInt();
 
-                String dev_name = new String(recv_buf, 4, pkg_len - 4);
+                String dev_name = new String(recv_buf, Integer.BYTES, pkg_len - Integer.BYTES);
 
                 mCallback.foundDevice(new Device(dev_name, addr, port));
             }
@@ -121,10 +122,35 @@ public class ScanHandler extends Thread
     class ScanStartThread implements Runnable
     {
 
+        private final Semaphore sem;
+        private boolean mResult = false;
+
+        ScanStartThread()
+        {
+            sem = new Semaphore(0);
+        }
+
+        public boolean tryScan()
+        {
+
+            new Thread(this).start();
+
+            try
+            {
+                sem.acquire();
+            }
+            catch (InterruptedException ignored)
+            {
+                return false;
+            }
+
+            return mResult;
+        }
+
         @Override
         public void run()
         {
-
+            mResult = true;
             try
             {
                 mSocket.send(mScanPkg);
@@ -134,7 +160,9 @@ public class ScanHandler extends Thread
                 e.printStackTrace();
             }
 
+            sem.release();
         }
+
     }
 
 }

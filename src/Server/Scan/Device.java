@@ -7,7 +7,7 @@ public class Device
 {
     private final InetAddress mAddress;
     private final int mPort;
-    private final String mName;
+    private String mName;
 
     public Device(String name, InetAddress addr, int port)
     {
@@ -21,6 +21,19 @@ public class Device
         mName = name;
         mAddress = InetAddress.getByName(ip);
         mPort = port;
+    }
+
+    public boolean isSameDevice(Device dev)
+    {
+        InetAddress ip = dev.getInetSocketAddress().getAddress();
+        int port = dev.getInetSocketAddress().getPort();
+
+        return port == mPort && ip.equals(mAddress);
+    }
+
+    public void setName(String newName)
+    {
+        mName = newName;
     }
 
     public String getName()

@@ -68,22 +68,32 @@
 控制命令采用文本格式，每一个换行为命令的结束。下为目前可用命令：
 
 * `scan`
-  * 扫描局域网中可用设备，返回值有如下格式：
-    * `Name1 IP_Addr1 Port1\nName2 IP_Addr2 Port2\n...`
-  * 每一个设备的条目拥有 设备名称(Name)、IP地址(IP_Addr)、端口(Port) 三项数据
-  * 一个条目的的多个数据通过空格进行分割，多个条目由换行符进行分割
-* `send <full-path> <ip> <port>`
-  * `full-path`: 文件全路径
-  * `ip`: 目标设备IP地址
-  * `port`: 目标设备端口
+    * 扫描局域网中可用设备，此命令不返回设备信息
+    * 返回值为`"success"`或`"failed"`
+* `get <data>`
+    * 从服务中获取数据
+    * 当前可选`data`项为:
+        * `dev-ol`: 获取局域网中在线设备，返回值格式为：
+        * `Name1 IP_Addr1 Port1\nName2 IP_Addr2 Port2\n...`
+        * 每一个设备的条目拥有 设备名称(Name)、IP地址(IP_Addr)、端口(Port) 三项数据
+        * 一个条目的的多个数据通过空格进行分割，多个条目由换行符进行分割
 * `set <conf> <value>`
-  * 设置配置，当前可用`conf`项为：
-    * `save-path`: 接收文件保存路径
-  * 设置`conf`为`value`
-  * 有返回值，`"success"` or `"failed"`
+    * 设置配置，当前可用`conf`项为：
+        * `save-path`: 接收文件保存路径
+    * 设置`conf`为`value`
+    * 有返回值，`"success"` or `"failed"`
+* `send-addr <ip> <port> <file-path>`
+    * 通过`IP`与`Port`指定设备，并向其发送文件
+    * `ip`: 目标设备IP地址
+    * `port`: 目标设备端口
+    * `full-path`: 待发送文件绝对路径
+* `send <dev-name> <file-path>`
+    * 通过设备名发送文件，设备名对应的设备需要已经被扫描到
+    * `dev-name`: 设备名称，用于在*在线列表*中查找设备
+    * `file-path`: 待发送文件绝对路径
 * `exit`
-  * 断开控制连接
-  * 无返回值
+    * 断开控制连接
+    * 无返回值
 
 ### 扫描协议
 
