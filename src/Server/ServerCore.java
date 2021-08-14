@@ -32,11 +32,47 @@ public class ServerCore implements CtrlCallback, ScanCallback
     // ========== UDP Port ==============
     private final int mPortScan;
 
+    enum ParamParseState {
+        NONE,
+        CONFIG,
+
+    }
 
     public static void main(String[] args)
     {
 
-        Configure conf = new Configure("config");
+
+        String conf_file = "config";
+
+        ParamParseState state = ParamParseState.NONE;
+
+        for (String s : args)
+        {
+            if (s == null) continue;
+            if (state.equals(ParamParseState.CONFIG))
+            {
+                File fd_conf = new File(s);
+                if (fd_conf.exists() && fd_conf.isFile())
+                {
+                    conf_file = s;
+                    state = ParamParseState.NONE;
+                }
+            }
+            else if (ParamParseState.NONE.equals(state))
+            {
+                switch (s)
+                {
+                    case "-c":
+                        state = ParamParseState.CONFIG;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+
+        Configure conf = new Configure(conf_file);
         ServerCore server = new ServerCore(conf);
         server.startServer();
 
