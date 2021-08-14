@@ -19,10 +19,11 @@ If you need a README in English, please refer to [README_EN](./README_EN.md)
 配置文件通过`key = value`的结构组织, 允许使用注释,注释行以`#`为开头
 
 目前可用的属性字段为:
-* `recv port`
-* `scan port`
-* `ctrl port`
-* `device name`
+* `recv port`  : 接收模块监听的端口(TCP)
+* `scan port` : 扫描模块使用的端口(UDP)
+* `ctrl port` : 控制模块使用的端口(TCP)
+* `device name` : 设备名称
+* `recv path` : 接受文件的保存路径
 
 ## 程序结构
 

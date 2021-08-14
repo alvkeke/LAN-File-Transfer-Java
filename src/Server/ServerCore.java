@@ -25,6 +25,7 @@ public class ServerCore implements CtrlCallback, ScanCallback
     private CtrlHandler mCtrlHandler;
     private ScanHandler mScanHandler;
 
+    private final String mRecvPath;
     private final String mDeviceName;
     // ========== TCP Port ==============
     private final int mPortCtrl;
@@ -84,6 +85,7 @@ public class ServerCore implements CtrlCallback, ScanCallback
         mAvailableDevices = new ArrayList<>();
         queue = new ArrayBlockingQueue<>(1024);
 
+        mRecvPath = conf.getRecvPath();
         mDeviceName = conf.getDeviceName();
         mPortCtrl = conf.tcpPortCtrl;
         mPortRecv = conf.tcpPortRecv;
@@ -97,6 +99,9 @@ public class ServerCore implements CtrlCallback, ScanCallback
         mRecvHandler = new RecvHandler();
         mCtrlHandler = new CtrlHandler(this);
         mScanHandler = new ScanHandler(this);
+
+        mRecvHandler.setSavePath(mRecvPath);
+
         try
         {
             mCtrlHandler.start(mPortCtrl, false);

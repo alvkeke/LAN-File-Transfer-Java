@@ -5,11 +5,13 @@ import java.io.*;
 public class Configure
 {
 
+    public final String DEFAULT_RECV_PATH = ".";
     public final String DEFAULT_DEVICE_NAME = "Unknown Device";
     public final int DEFAULT_CTRL_PORT = 10001;
     public final int DEFAULT_RECV_PORT = 10000;
     public final int DEFAULT_SCAN_PORT = 10000;
 
+    public String recvPath;
     public String deviceName;
     public int tcpPortCtrl;
     public int tcpPortRecv;
@@ -18,6 +20,7 @@ public class Configure
     private void parseConfigure(File conf)
     {
 
+        recvPath = DEFAULT_RECV_PATH;
         deviceName = DEFAULT_DEVICE_NAME;
         tcpPortCtrl = DEFAULT_CTRL_PORT;
         tcpPortRecv = DEFAULT_RECV_PORT;
@@ -91,6 +94,12 @@ public class Configure
                     System.out.print("Configure[I] : comment: ");
                     System.out.println(deviceName);
                 }
+                else if (params[0].equals("recv path"))
+                {
+                    recvPath = params[1];
+                    System.out.print("Configure[I] : set receive file path: ");
+                    System.out.println(recvPath);
+                }
 
             }
 
@@ -136,7 +145,8 @@ public class Configure
         return udpPortScan;
     }
 
-
-
-
+    public String getRecvPath()
+    {
+        return recvPath;
+    }
 }

@@ -11,20 +11,22 @@ If you need a frontend tool, please move to
 
 ## Usage
 
-Some property(ports, device name) can be change by a configuration, 
-but only the default configure file take effect now.
-The default configure file has the name `config`, 
-and it located in the same directory as where the program located in.
+Some property(ports, device name) can be change by a configuration file, 
+if configuration file was not assign, program will find the default configuration named `config` and located in
+the same directory as where the program located in.
+
+you can assign the configuration file by pass the command parameter `-c <config>`
 
 The configuration file is composed of some lines with format `key = value`, 
 and it allows user write blank lines or comments. 
 Lines start with `#` are comments.
 
 Here are valid `key` at present:
-* `recv port`
-* `scan port`
-* `ctrl port`
-* `device name`
+* `recv port` : the port(TCP) that receiving module listen.
+* `scan port` : the port(UDP) that scanning module listen.
+* `ctrl port` : the port(TCP) that controlling module listen.
+* `device name` : the name will be sent to other devices.
+* `recv path` : the path to save received files.
 
 ## Program Structure
 
