@@ -59,9 +59,15 @@ public class CtrlHandler extends Thread
         {
             boolean ret = mCallback.scanDevice();
             if (ret)
+            {
                 sb.append("success");
+                System.out.println("CtrlHandler[I] : try to scan devices online: success.");
+            }
             else
+            {
                 sb.append("failed: cannot send request package.");
+                System.out.println("CtrlHandler[E] : try to scan devices online: failed.");
+            }
         }
         else if ("send".equals(cmd) && cmdline.size() == 3)
         {
@@ -70,13 +76,20 @@ public class CtrlHandler extends Thread
             {
                 sb.append("failed: cannot find device has name: ")
                         .append(cmdline.get(1));
+                System.out.println("CtrlHandler[E] : send file failed: cannot find device /" + cmdline.get(1) + "/");
             }
             else
             {
                 if (mCallback.sendFile(new File(cmdline.get(2)), dev))
+                {
                     sb.append("success");
+                    System.out.print("CtrlHandler[I] : send file " + cmdline.get(2) + " to " + cmdline.get(1) + " success.");
+                }
                 else
+                {
                     sb.append("failed: file is not exist.");
+                    System.out.println("CtrlHandler[E] : send file failed: " + cmdline.get(2) + " not found.");
+                }
             }
         }
         else if ("send-addr".equals(cmd) && cmdline.size() == 4)
@@ -88,14 +101,22 @@ public class CtrlHandler extends Thread
 
                 // device name is useless here.
                 if (!mCallback.sendFile(new File(cmdline.get(3)), new Device("", addr, port)))
+                {
                     sb.append("failed: file is not exist.");
+                    System.out.println("CtrlHandler[E] : send file failed: file " + cmdline.get(3) + " not found.");
+                }
                 else
+                {
                     sb.append("success");
+                    System.out.println("CtrlHandler[I] : send file " + cmdline.get(3) + " success.");
+                }
             }
             catch (Exception e)
             {
                 e.printStackTrace();
                 sb.append("failed: ip or port input error.");
+                System.out.println("CtrlHandler[E] : send file failed: ip[" +
+                        cmdline.get(1) + "]/port[" + cmdline.get(2) + "] format error.");
             }
         }
         else if ("set".equals(cmd) && cmdline.size() == 3)
@@ -105,13 +126,23 @@ public class CtrlHandler extends Thread
             if ("save-path".equals(data_item))
             {
                 if (mCallback.setSavePath(new File(cmdline.get(2))))
+                {
                     sb.append("success");
+                    System.out.println("CtrlHandler[I] : set save path to " + cmdline.get(2) + " success.");
+                }
                 else
+                {
                     sb.append("failed: not a valid directory.");
+                    System.out.println("CtrlHandler[E] : set save path to " + cmdline.get(2) + " failed, invalid directory.");
+                }
 
             }
             else
+            {
                 sb.append("failed: configuration item not found.");
+                System.out.println("CtrlHandler[E] : set " + data_item + " = " + cmdline.get(2) +
+                        " failed, no such configuration item.");
+            }
         }
         else if ("get".equals(cmd) && cmdline.size() == 2)
         {
@@ -128,17 +159,29 @@ public class CtrlHandler extends Thread
                             .append(d.getInetSocketAddress().getPort())
                             .append("|");
                 }
+                System.out.println("CtrlHandler[I] : get online devices success.");
             }
             else if ("save-path".equals(data_item))
             {
                 sb.append(mCallback.getSavePath());
+                System.out.println("CtrlHandler[I] : get save-path success: " + mCallback.getSavePath());
             }
             else
+            {
                 sb.append("failed: data item not found.");
+                System.out.println("CtrlHandler[E] : get " + data_item + " failed, no such data item.");
+            }
         }
         else
         {
             sb.append("failed: command not found.");
+            System.out.print("CtrlHandler[E] : command not found: ");
+            for (String s : cmdline)
+            {
+                System.out.print(s);
+                System.out.print(" ");
+            }
+            System.out.println();
         }
 
         sb.append("\n");
@@ -183,7 +226,7 @@ public class CtrlHandler extends Thread
                     String cmdline = br.readLine();
                     if (cmdline == null)
                     {
-                        System.out.println("CtrlHandler[ERR]: connection closed exception.");
+                        System.out.println("CtrlHandler[E] : connection closed exception.");
                         break;
                     }
                     String[] splits = cmdline.split(" ");
@@ -235,7 +278,7 @@ public class CtrlHandler extends Thread
                 e.printStackTrace();
             }
 
-            System.out.println("CtrlHandler[INFO]: Ctrl session closed.");
+            System.out.println("CtrlHandler[I] : Ctrl session closed.");
 
         }
     }
