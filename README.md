@@ -24,6 +24,7 @@ If you need a README in English, please refer to [README_EN](./README_EN.md)
 * `ctrl port` : 控制模块使用的端口(TCP)
 * `device name` : 设备名称
 * `recv path` : 接受文件的保存路径
+* `outside ctrl` : 是否能够在外部设备连接控制模块
 
 ## 程序结构
 

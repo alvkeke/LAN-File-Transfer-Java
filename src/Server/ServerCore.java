@@ -25,13 +25,7 @@ public class ServerCore implements CtrlCallback, ScanCallback
     private CtrlHandler mCtrlHandler;
     private ScanHandler mScanHandler;
 
-    private final String mRecvPath;
-    private final String mDeviceName;
-    // ========== TCP Port ==============
-    private final int mPortCtrl;
-    private final int mPortRecv;
-    // ========== UDP Port ==============
-    private final int mPortScan;
+    private final Configure mConf;
 
     enum ParamParseState {
         NONE,
@@ -41,7 +35,6 @@ public class ServerCore implements CtrlCallback, ScanCallback
 
     public static void main(String[] args)
     {
-
 
         String conf_file = "config";
 
@@ -72,7 +65,6 @@ public class ServerCore implements CtrlCallback, ScanCallback
             }
         }
 
-
         Configure conf = new Configure(conf_file);
         ServerCore server = new ServerCore(conf);
         server.startServer();
@@ -84,12 +76,7 @@ public class ServerCore implements CtrlCallback, ScanCallback
 
         mAvailableDevices = new ArrayList<>();
         queue = new ArrayBlockingQueue<>(1024);
-
-        mRecvPath = conf.getRecvPath();
-        mDeviceName = conf.getDeviceName();
-        mPortCtrl = conf.tcpPortCtrl;
-        mPortRecv = conf.tcpPortRecv;
-        mPortScan = conf.udpPortScan;
+        mConf = conf;
 
     }
 
@@ -100,14 +87,14 @@ public class ServerCore implements CtrlCallback, ScanCallback
         mCtrlHandler = new CtrlHandler(this);
         mScanHandler = new ScanHandler(this);
 
-        mRecvHandler.setSavePath(mRecvPath);
+        mRecvHandler.setSavePath(mConf.getRecvPath());
 
         try
         {
-            mCtrlHandler.start(mPortCtrl, false);
-            mRecvHandler.start(mPortRecv);
+            mCtrlHandler.start(mConf.getPortCtrl(), mConf.isLocalCtrlOnly());
+            mRecvHandler.start(mConf.getPortRecv());
             mSendHandler.start();
-            mScanHandler.start(mPortScan);
+            mScanHandler.start(mConf.getPortScan());
         }
         catch (Exception e)
         {
@@ -188,13 +175,13 @@ public class ServerCore implements CtrlCallback, ScanCallback
     @Override
     public String getDeviceName()
     {
-        return mDeviceName;
+        return mConf.getDeviceName();
     }
 
     @Override
     public int getRecvPort()
     {
-        return mPortRecv;
+        return mConf.getPortRecv();
     }
 
 }

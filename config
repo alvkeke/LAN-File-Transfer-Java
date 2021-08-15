@@ -10,3 +10,5 @@ ctrl port = 15000
 device name = My Device
 
 recv path = /home/alvis/download
+
+outside ctrl = true

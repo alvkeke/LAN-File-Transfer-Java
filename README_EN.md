@@ -27,6 +27,7 @@ Here are valid `key` at present:
 * `ctrl port` : the port(TCP) that controlling module listen.
 * `device name` : the name will be sent to other devices.
 * `recv path` : the path to save received files.
+* `outside ctrl` : if ctrl-module can be connected from outside devices.
 
 ## Program Structure
 

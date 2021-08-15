@@ -10,12 +10,14 @@ public class Configure
     public final int DEFAULT_CTRL_PORT = 10001;
     public final int DEFAULT_RECV_PORT = 10000;
     public final int DEFAULT_SCAN_PORT = 10000;
+    public final boolean DEFAULT_LOCAL_CTRL_ONLY = true;
 
-    public String recvPath;
-    public String deviceName;
-    public int tcpPortCtrl;
-    public int tcpPortRecv;
-    public int udpPortScan;
+    private String recvPath;
+    private String deviceName;
+    private int tcpPortCtrl;
+    private int tcpPortRecv;
+    private int udpPortScan;
+    private boolean localCtrlOnly;
 
     private void parseConfigure(File conf)
     {
@@ -25,6 +27,7 @@ public class Configure
         tcpPortCtrl = DEFAULT_CTRL_PORT;
         tcpPortRecv = DEFAULT_RECV_PORT;
         udpPortScan = DEFAULT_SCAN_PORT;
+        localCtrlOnly = DEFAULT_LOCAL_CTRL_ONLY;
 
         if (!conf.exists()) return;
         if (conf.isDirectory()) return;
@@ -100,6 +103,12 @@ public class Configure
                     System.out.print("Configure[I] : set receive file path: ");
                     System.out.println(recvPath);
                 }
+                else if (params[0].equals("outside ctrl"))
+                {
+                    localCtrlOnly = !Boolean.parseBoolean(params[1]);
+                    System.out.print("Configure[I] : local ctrl only : ");
+                    System.out.print(localCtrlOnly);
+                }
 
             }
 
@@ -149,4 +158,11 @@ public class Configure
     {
         return recvPath;
     }
+
+    public boolean isLocalCtrlOnly()
+    {
+        return localCtrlOnly;
+    }
+
+
 }
